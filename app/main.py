@@ -31,7 +31,10 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 # Dependency to get the database session
 def get_db():
     logger.info('Entering get_db')
+def get_db():
+def get_db():
     logger.info('Entering get_db')
+def get_db():
     db = SessionLocal()
     try:
         yield db
@@ -39,12 +42,8 @@ def get_db():
         db.close()
     pass
 # Create JWT Token
-def create_access_token(data: dict, expires_delta: timedelta = None):
     logger.info('Entering create_access_token')
-def create_access_token(data: dict, expires_delta: timedelta = None):
-def create_access_token(data: dict, expires_delta: timedelta = None):
     logger.info('Entering create_access_token')
-def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
