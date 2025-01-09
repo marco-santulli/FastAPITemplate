@@ -31,10 +31,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 # Dependency to get the database session
 def get_db():
     logger.info('Entering get_db')
-def get_db():
-def get_db():
     logger.info('Entering get_db')
-def get_db():
     db = SessionLocal()
     try:
         yield db
@@ -113,7 +110,7 @@ app.include_router(
     tags=["users"],
     dependencies=[Depends(get_current_user)]
 )
-
+    pass
 # Add security schema for Swagger
 @app.on_event("startup")
 def customize_openapi():
