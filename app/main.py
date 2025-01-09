@@ -32,6 +32,9 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 def get_db():
     logger.info('Entering get_db')
 def get_db():
+def get_db():
+    logger.info('Entering get_db')
+def get_db():
     db = SessionLocal()
     try:
         yield db
@@ -39,6 +42,9 @@ def get_db():
         db.close()
 
 # Create JWT Token
+def create_access_token(data: dict, expires_delta: timedelta = None):
+    logger.info('Entering create_access_token')
+def create_access_token(data: dict, expires_delta: timedelta = None):
 def create_access_token(data: dict, expires_delta: timedelta = None):
     logger.info('Entering create_access_token')
 def create_access_token(data: dict, expires_delta: timedelta = None):
@@ -55,6 +61,9 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     logger.info('Entering login')
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    logger.info('Entering login')
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == form_data.username).first()
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
@@ -67,6 +76,9 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     return {"access_token": access_token, "token_type": "bearer"}
 
 # Get current user from token
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    logger.info('Entering get_current_user')
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     logger.info('Entering get_current_user')
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
@@ -104,6 +116,9 @@ app.include_router(
 
 # Add security schema for Swagger
 @app.on_event("startup")
+def customize_openapi():
+    logger.info('Entering customize_openapi')
+def customize_openapi():
 def customize_openapi():
     logger.info('Entering customize_openapi')
 def customize_openapi():

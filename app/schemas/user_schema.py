@@ -13,6 +13,9 @@ class UserCreate(UserBase):
     def check_password_fields(self):
         logger.info('Entering check_password_fields')
     def check_password_fields(self):
+    def check_password_fields(self):
+        logger.info('Entering check_password_fields')
+    def check_password_fields(self):
         if not self.password and not self.hashed_password:
             raise ValueError("Either 'password' or 'hashed_password' must be provided.")
         if self.password and self.hashed_password:
@@ -26,6 +29,9 @@ class UserUpdate(BaseModel):
     hashed_password: str = None
 
     @model_validator(mode="after")
+    def validate_password_fields(self):
+        logger.info('Entering validate_password_fields')
+    def validate_password_fields(self):
     def validate_password_fields(self):
         logger.info('Entering validate_password_fields')
     def validate_password_fields(self):
