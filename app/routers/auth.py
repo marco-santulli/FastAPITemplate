@@ -1,4 +1,9 @@
 
+from logging import getLogger
+
+logger = getLogger(__name__)
+
+
 from fastapi import APIRouter, Depends, HTTPException
 from app.schemas.user_schema import UserCreate, Token
 from app.services.user_service import authenticate_user, create_access_token
