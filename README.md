@@ -39,8 +39,8 @@ tests/
 1. Clone the repository and navigate to the project directory:
 
    ```bash
-   git clone <repository-url>
-   cd fastapi-template-project
+   git clone https://github.com/marco-santulli/FastAPITemplate/edit/main/README.md
+   cd FastAPITemplate
    ```
 
 2. Create and activate a virtual environment:
