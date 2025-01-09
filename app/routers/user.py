@@ -1,6 +1,7 @@
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
+from typing import List, Optional
 from app.models.database import SessionLocal
 from app.schemas.user_schema import UserCreate, UserUpdate, UserResponse
 from app.services.user_service import (
@@ -8,6 +9,7 @@ from app.services.user_service import (
     get_user_service,
     update_user_service,
     delete_user_service,
+    list_users_service,
 )
 from app.models.user import User
 
@@ -31,6 +33,16 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
+
+@router.get("/", response_model=List[UserResponse])
+def list_users(
+    db: Session = Depends(get_db),
+    email: Optional[str] = Query(None, description="Filter by email"),
+    full_name: Optional[str] = Query(None, description="Filter by full name"),
+    limit: int = Query(10, ge=1, le=100, description="Number of users to return"),
+    offset: int = Query(0, ge=0, description="Offset for pagination"),
+):
+    return list_users_service(db, email=email, full_name=full_name, limit=limit, offset=offset)
 
 @router.put("/{user_id}", response_model=UserResponse)
 def update_user(user_id: int, payload: UserUpdate, db: Session = Depends(get_db)):
