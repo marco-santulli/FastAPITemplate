@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.models.user import User
 from app.schemas.user_schema import UserCreate, UserUpdate
 from app.utils.security import get_password_hash
-from typing import List, Optional
+from fastapi import HTTPException
 
 def create_user_service(user_data: UserCreate, db: Session):
     if user_data.hashed_password:
@@ -23,7 +23,7 @@ def create_user_service(user_data: UserCreate, db: Session):
 def get_user_service(user_id: int, db: Session):
     return db.query(User).filter(User.id == user_id).first()
 
-def list_users_service(db: Session, email: Optional[str], full_name: Optional[str], limit: int, offset: int) -> List[User]:
+def list_users_service(db: Session, email=None, full_name=None, limit=10, offset=0):
     query = db.query(User)
     if email:
         query = query.filter(User.email.ilike(f"%{email}%"))
@@ -39,7 +39,9 @@ def update_user_service(user_id: int, user_data: UserUpdate, db: Session):
         user.email = user_data.email
     if user_data.full_name:
         user.full_name = user_data.full_name
-    if user_data.password:
+    if user_data.hashed_password:
+        user.hashed_password = user_data.hashed_password
+    elif user_data.password:
         user.hashed_password = get_password_hash(user_data.password)
     db.commit()
     db.refresh(user)

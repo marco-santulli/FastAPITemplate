@@ -21,6 +21,13 @@ class UserUpdate(BaseModel):
     email: EmailStr = None
     full_name: str = None
     password: str = None
+    hashed_password: str = None
+
+    @model_validator(mode="after")
+    def validate_password_fields(self):
+        if self.password and self.hashed_password:
+            raise ValueError("Provide only one of 'password' or 'hashed_password'.")
+        return self
 
 class UserResponse(UserBase):
     id: int
