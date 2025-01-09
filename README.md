@@ -39,8 +39,8 @@ tests/
 1. Clone the repository and navigate to the project directory:
 
    ```bash
-   git clone https://github.com/marco-santulli/FastAPITemplate/edit/main/README.md
-   cd FastAPITemplate
+   git clone <repository-url>
+   cd fastapi-template-project
    ```
 
 2. Create and activate a virtual environment:
@@ -56,17 +56,21 @@ tests/
    pip install -r requirements.txt
    ```
 
-4. Configure the database:
+4. Create a `.env` file for environment variables by copying `.env.example`:
 
-   - Update `DATABASE_URL` in `app/core/config.py` with your PostgreSQL connection string.
+   ```bash
+   cp .env.example .env
+   ```
 
-5. Run the database migrations (if using Alembic):
+5. Update the `.env` file with your database credentials and secret key.
+
+6. Run the database migrations (if using Alembic):
 
    ```bash
    alembic upgrade head
    ```
 
-6. Start the application:
+7. Start the application:
 
    ```bash
    uvicorn app.main:app --reload
