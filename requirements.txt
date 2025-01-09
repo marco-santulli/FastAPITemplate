@@ -5,3 +5,4 @@ sqlalchemy
 alembic
 pydantic[email]
 passlib[bcrypt]
+python-multipart
