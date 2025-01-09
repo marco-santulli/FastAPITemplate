@@ -28,10 +28,22 @@ def authenticate(credentials: HTTPBasicCredentials, db: Session = Depends(get_db
         )
     return user
 
-# Add API routers with authentication dependency
+# Add authentication security to all routes
 app.include_router(
     user.router, 
     prefix="/users", 
     tags=["users"], 
     dependencies=[Depends(authenticate)]
 )
+
+# Add the security scheme to Swagger
+@app.on_event("startup")
+def customize_openapi():
+    if not app.openapi_schema:
+        app.openapi_schema = app.openapi()
+    app.openapi_schema["components"]["securitySchemes"] = {
+        "basicAuth": {"type": "http", "scheme": "basic"}
+    }
+    for path, methods in app.openapi_schema["paths"].items():
+        for method in methods:
+            methods[method]["security"] = [{"basicAuth": []}]
