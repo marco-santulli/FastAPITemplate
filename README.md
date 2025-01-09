@@ -62,7 +62,9 @@ tests/
    cp .env.example .env
    ```
 
-5. Update the `.env` file with your database credentials and secret key.
+5. Update the `.env` file with your database credentials and secret key (the secret key is for the JWT generation).  Lock it with 
+chmod 600 .env
+NOTE: In a production environment use a vault service to store credentials.
 
 6. Run the database migrations (if using Alembic):
 
