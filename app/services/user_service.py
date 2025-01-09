@@ -6,7 +6,10 @@ from app.utils.security import get_password_hash
 from typing import List, Optional
 
 def create_user_service(user_data: UserCreate, db: Session):
-    hashed_password = get_password_hash(user_data.password)
+    if user_data.hashed_password:
+        hashed_password = user_data.hashed_password
+    else:
+        hashed_password = get_password_hash(user_data.password)
     new_user = User(
         email=user_data.email,
         full_name=user_data.full_name,
