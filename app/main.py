@@ -31,10 +31,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 # Dependency to get the database session
 def get_db():
     logger.info('Entering get_db')
-def get_db():
-def get_db():
     logger.info('Entering get_db')
-def get_db():
     db = SessionLocal()
     try:
         yield db
@@ -56,10 +53,7 @@ def get_db():
 @app.post("/login")
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     logger.info('Entering login')
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     logger.info('Entering login')
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == form_data.username).first()
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
@@ -74,10 +68,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
 # Get current user from token
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     logger.info('Entering get_current_user')
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     logger.info('Entering get_current_user')
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("sub")
@@ -114,10 +105,7 @@ app.include_router(
 @app.on_event("startup")
 def customize_openapi():
     logger.info('Entering customize_openapi')
-def customize_openapi():
-def customize_openapi():
     logger.info('Entering customize_openapi')
-def customize_openapi():
     if not app.openapi_schema:
         app.openapi_schema = app.openapi()
     app.openapi_schema["components"]["securitySchemes"] = {
