@@ -2,6 +2,7 @@
 from app.models.user import User
 from app.core.security import create_access_token, verify_password
 from app.models.database import SessionLocal
+from app.schemas.user_schema import UserCreate
 
 def authenticate_user(user: UserCreate):
     db = SessionLocal()
