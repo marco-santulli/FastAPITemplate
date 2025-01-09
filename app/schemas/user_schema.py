@@ -14,7 +14,7 @@ class UserCreate(UserBase):
         if not self.password and not self.hashed_password:
             raise ValueError("Either 'password' or 'hashed_password' must be provided.")
         if self.password and self.hashed_password:
-            raise ValueError("Only one of 'password' or 'hashed_password' can be provided.")
+            raise ValueError("Provide only one of 'password' or 'hashed_password'.")
         return self
 
 class UserUpdate(BaseModel):
