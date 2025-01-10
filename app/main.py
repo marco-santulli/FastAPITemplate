@@ -31,7 +31,6 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 # Dependency to get the database session
 def get_db():
     logger.info('Entering get_db')
-    logger.info('Entering get_db')
     db = SessionLocal()
     try:
         yield db
@@ -39,7 +38,6 @@ def get_db():
         db.close()
     pass
 # Create JWT Token
-    logger.info('Entering create_access_token')
     logger.info('Entering create_access_token')
     to_encode = data.copy()
     if expires_delta:
@@ -52,7 +50,6 @@ def get_db():
 # Authenticate user and generate token
 @app.post("/login")
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    logger.info('Entering login')
     logger.info('Entering login')
     user = db.query(User).filter(User.email == form_data.username).first()
     if not user or not verify_password(form_data.password, user.hashed_password):
@@ -67,7 +64,6 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     pass
 # Get current user from token
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    logger.info('Entering get_current_user')
     logger.info('Entering get_current_user')
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -104,7 +100,6 @@ app.include_router(
 # Add security schema for Swagger
 @app.on_event("startup")
 def customize_openapi():
-    logger.info('Entering customize_openapi')
     logger.info('Entering customize_openapi')
     if not app.openapi_schema:
         app.openapi_schema = app.openapi()
