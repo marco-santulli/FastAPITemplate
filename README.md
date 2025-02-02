@@ -1,103 +1,105 @@
+# FastAPI User Management Template
 
-# FastAPI Template Project
-
-## Overview
-
-This is a template project for FastAPI, designed based on best practices. It includes:
-- User authentication with JWT token generation and verification.
-- Database integration using PostgreSQL and SQLAlchemy.
-- Modular structure for easy scalability and maintainability.
+This template implements a secure user management system following best practices outlined in our development guidelines. It provides basic user authentication and management functionality with JWT token support.
 
 ## Project Structure
 
 ```
 app/
-├── main.py                # Entry point of the application
-├── routers/               # API route definitions
-│   └── auth.py            # Authentication endpoints
-├── models/                # Database models
-│   └── user.py            # User model
-├── schemas/               # Pydantic schemas for validation
-│   └── user_schema.py     # Schemas for user requests and responses
-├── services/              # Business logic layer
-│   └── user_service.py    # User-related operations
-├── core/                  # Core utilities and configurations
-│   ├── config.py          # App and database configuration
-│   └── security.py        # Security utilities (password hashing, JWT)
-tests/
-└── test_users.py          # Test cases for user routes
-```
+├── alembic/                  # Database migrations
+├── core/                     # Core application components
+│   ├── config.py            # Configuration management
+│   ├── security.py          # Security utilities
+│   └── database.py          # Database connection management
+├── models/                   # SQLAlchemy models
+│   └── user.py              # User model definition
+├── schemas/                  # Pydantic schemas
+│   └── user.py              # User-related schemas
+├── services/                 # Business logic
+│   └── user_service.py      # User-related services
+├── api/                     # API routes
+│   └── v1/
+│       ├── endpoints/       # API endpoints
+│       │   └── users.py    # User-related endpoints
+│       └── api.py          # API router configuration
+├── tests/                   # Test files
+├── main.py                  # Application entry point
+└── requirements.txt         # Project dependencies
 
-## Requirements
+## Security Considerations
 
-- Python 3.7+
-- PostgreSQL
-- pip for managing dependencies
+1. Environment Variables:
+   - Never commit .env files to version control
+   - Use .env.example as a template, but remove sensitive values
+   - Store production credentials in a secure vault
+   - Rotate secrets regularly
 
-## Setup
+2. Database Security:
+   - Use connection pooling for efficient and secure connections
+   - Never expose database port to public internet
+   - Use strong passwords and encryption
+   - Regular security audits and updates
 
-1. Clone the repository and navigate to the project directory:
+3. API Security:
+   - All endpoints are protected with JWT authentication
+   - Passwords are hashed using bcrypt
+   - Rate limiting is implemented
+   - CORS is configured for specific origins
 
-   ```bash
-   git clone <repository-url>
-   cd fastapi-template-project
-   ```
+## Setup Instructions
 
-2. Create and activate a virtual environment:
-
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. Install dependencies:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. Create a `.env` file for environment variables by copying `.env.example`:
-
-   ```bash
-   cp .env.example .env
-   ```
-
-5. Update the `.env` file with your database credentials and secret key (the secret key is for the JWT generation).  Lock it with 
-chmod 600 .env
-NOTE: In a production environment use a vault service to store credentials.
-
-6. Run the database migrations (if using Alembic):
-
-   ```bash
-   alembic upgrade head
-   ```
-
-7. Start the application:
-
-   ```bash
-   uvicorn app.main:app --reload
-   ```
-
-## Running Tests
-
-Run the test suite using pytest:
-
+1. Clone the repository
+2. Copy .env.example to .env and fill in your configuration:
 ```bash
-pytest
+cp .env.example .env
 ```
 
-## Features
+3. Create a virtual environment and install dependencies:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
 
-- **JWT Authentication**: Secure token-based authentication for user login.
-- **PostgreSQL Integration**: Using SQLAlchemy for ORM.
-- **Validation with Pydantic**: Strong typing and validation for API requests and responses.
-- **Modular Structure**: Clean separation of concerns for scalability.
+4. Initialize the database:
+```bash
+alembic upgrade head
+```
 
-## API Endpoints
+5. Run the application:
+```bash
+uvicorn app.main:app --reload
+```
 
-- `POST /auth/login`: Authenticate a user and receive a JWT token.
+The API will be available at http://localhost:8000
+API documentation is available at http://localhost:8000/docs
 
-## Additional Notes
+## Development Guidelines
 
-- Ensure your `.env` file is configured for sensitive data like `DATABASE_URL` and `SECRET_KEY`.
-- Customize the project as needed to fit your application requirements.
+1. Code Style:
+   - Follow PEP 8
+   - Use black for formatting
+   - Run pylint for static analysis
+
+2. Testing:
+   - Write unit tests for all new features
+   - Maintain test coverage above 80%
+   - Run tests before committing
+
+3. Git Workflow:
+   - Use feature branches
+   - Squash commits before merging
+   - Write meaningful commit messages
+
+## API Documentation
+
+The API provides the following endpoints:
+
+- POST /api/v1/users/register - Register new user
+- POST /api/v1/users/login - Login user
+- GET /api/v1/users/me - Get current user info
+- PUT /api/v1/users/me - Update current user info
+
+## License
+
+MIT License - See LICENSE file for details
