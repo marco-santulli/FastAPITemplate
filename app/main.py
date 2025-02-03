@@ -1,8 +1,7 @@
 import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.openapi.docs import get_swagger_ui_html
-from fastapi.openapi.utils import get_openapi
+from fastapi.security import OAuth2PasswordBearer
 from app.core.config import settings
 from app.api.v1.api import api_router
 
@@ -10,13 +9,17 @@ log = logging.getLogger(__name__)
 
 def create_application() -> FastAPI:
     """Create FastAPI application."""
+    log.info(f"Creating FastAPI application with name: {settings.PROJECT_NAME}")
+    log.info(f"API prefix: {settings.API_V1_PREFIX}")
+    log.info(f"Auth token URL: {settings.AUTH_TOKEN_URL}")
+    
     app = FastAPI(
         title=settings.PROJECT_NAME,
+        description="REST API with JWT Authentication",
+        version="1.0.0",
         openapi_url=f"{settings.API_V1_PREFIX}/openapi.json",
-        swagger_ui_parameters={
-            "defaultModelsExpandDepth": -1,
-            "persistAuthorization": True
-        }
+        docs_url=f"{settings.API_V1_PREFIX}/docs",
+        redoc_url=f"{settings.API_V1_PREFIX}/redoc",
     )
 
     # Set all CORS enabled origins
@@ -28,37 +31,6 @@ def create_application() -> FastAPI:
         allow_headers=["*"],
     )
 
-    def custom_openapi():
-        if app.openapi_schema:
-            return app.openapi_schema
-
-        openapi_schema = get_openapi(
-            title=settings.PROJECT_NAME,
-            version="1.0.0",
-            description="FastAPI template with JWT authentication",
-            routes=app.routes,
-        )
-
-        # Custom security scheme
-        openapi_schema["components"] = {
-            "securitySchemes": {
-                "Bearer": {
-                    "type": "apiKey",
-                    "in": "header",
-                    "name": "Authorization",
-                    "description": "Enter: **'Bearer &lt;JWT&gt;'** where JWT is the access token"
-                }
-            }
-        }
-
-        # Apply security globally to all routes
-        openapi_schema["security"] = [{"Bearer": []}]
-
-        app.openapi_schema = openapi_schema
-        return app.openapi_schema
-
-    app.openapi = custom_openapi
-
     # Include API router
     app.include_router(api_router, prefix=settings.API_V1_PREFIX)
 
@@ -69,6 +41,10 @@ app = create_application()
 @app.on_event("startup")
 async def startup_event():
     log.info("Starting up FastAPI application")
+    # Print out all settings for debugging (except sensitive ones)
+    log.info(f"Project Name: {settings.PROJECT_NAME}")
+    log.info(f"API Prefix: {settings.API_V1_PREFIX}")
+    log.info(f"Auth Token URL: {settings.AUTH_TOKEN_URL}")
 
 @app.on_event("shutdown")
 async def shutdown_event():

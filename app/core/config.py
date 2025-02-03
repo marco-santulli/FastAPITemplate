@@ -1,7 +1,7 @@
 import logging
 from typing import List
 from pydantic_settings import BaseSettings
-from pydantic import EmailStr, validator
+from pydantic import EmailStr, validator, computed_field
 
 log = logging.getLogger(__name__)
 
@@ -57,6 +57,12 @@ class Settings(BaseSettings):
             return f"mysql+pymysql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
         else:  # postgresql
             return f"postgresql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+
+    @computed_field
+    @property
+    def AUTH_TOKEN_URL(self) -> str:
+        """Full URL path for authentication endpoint"""
+        return f"{self.API_V1_PREFIX}/users/login"
 
     class Config:
         env_file = ".env"

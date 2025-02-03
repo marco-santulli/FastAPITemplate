@@ -1,14 +1,14 @@
 import logging
 from datetime import timedelta
 from typing import Any
-from fastapi import APIRouter, Depends, HTTPException, Query, status, Security
-from fastapi.security import OAuth2PasswordRequestForm, APIKeyHeader
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from jose import JWTError, jwt
 
 from app.core.config import settings
 from app.core.database import get_db
-from app.core.security import create_access_token
+from app.core.security import create_access_token, oauth2_scheme  # Move oauth2_scheme to security.py
 from app.services import (
     get_user_by_id, get_user_by_email, create_user, update_user,
     authenticate_user, get_users
@@ -20,12 +20,9 @@ from app.schemas.user import (
 log = logging.getLogger(__name__)
 router = APIRouter()
 
-# Use APIKeyHeader for Bearer token
-api_key_header = APIKeyHeader(name="Authorization", auto_error=True)
-
 async def get_current_user(
     db: Session = Depends(get_db),
-    authorization: str = Security(api_key_header)
+    token: str = Depends(oauth2_scheme)
 ) -> User:
     """Get current user from JWT token."""
     credentials_exception = HTTPException(
@@ -33,15 +30,7 @@ async def get_current_user(
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    
     try:
-        # Check if token starts with "Bearer "
-        if not authorization.startswith("Bearer "):
-            raise credentials_exception
-        
-        # Remove "Bearer " prefix to get the token
-        token = authorization.replace("Bearer ", "")
-        
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
         )
@@ -52,9 +41,6 @@ async def get_current_user(
     except JWTError as e:
         log.error(f"JWT token validation error: {str(e)}")
         raise credentials_exception
-    except Exception as e:
-        log.error(f"Authentication error: {str(e)}")
-        raise credentials_exception
 
     user = get_user_by_id(db, int(user_id))
     if user is None:
@@ -63,7 +49,7 @@ async def get_current_user(
     return user
 
 async def get_current_active_superuser(
-    current_user: User = Security(get_current_user),
+    current_user: User = Depends(get_current_user),
 ) -> User:
     """Check if current user is superuser."""
     if not current_user.is_superuser:
@@ -107,14 +93,14 @@ def register_user(
              summary="Login to get access token",
              description="""
              Login with email and password to get JWT token.
-             Use the token in the 'Authorization' header as: Bearer your_token
+             Use the token in the 'Authorize' button at the top of this page.
              """)
 async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ) -> Any:
     """
-    OAuth2 compatible token login, get an access token for future requests.
+    Get JWT access token.
     """
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
@@ -132,9 +118,10 @@ async def login(
 @router.get("/me",
             response_model=User,
             summary="Get current user",
-            description="Get details of currently logged in user")
+            description="Get details of currently logged in user",
+            dependencies=[Depends(oauth2_scheme)])
 async def read_users_me(
-    current_user: User = Security(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """
     Get current user.
@@ -142,14 +129,15 @@ async def read_users_me(
     return current_user
 
 @router.put("/me",
-           response_model=User,
-           summary="Update current user",
-           description="Update information for the currently logged in user")
+            response_model=User,
+            summary="Update current user",
+            description="Update information for the currently logged in user",
+            dependencies=[Depends(oauth2_scheme)])
 async def update_user_me(
     *,
     db: Session = Depends(get_db),
     user_in: UserUpdate,
-    current_user: User = Security(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """
     Update own user.
@@ -158,15 +146,16 @@ async def update_user_me(
     return user
 
 @router.get("/",
-           response_model=PaginatedResponse,
-           summary="List users",
-           description="Get list of users. Only available to superusers.")
+            response_model=PaginatedResponse,
+            summary="List users",
+            description="Get list of users. Only available to superusers.",
+            dependencies=[Depends(oauth2_scheme)])
 async def read_users(
     db: Session = Depends(get_db),
     skip: int = 0,
     limit: int = 100,
     search_params: UserSearchParams = Depends(),
-    current_user: User = Security(get_current_active_superuser)
+    current_user: User = Depends(get_current_active_superuser)
 ):
     """
     Retrieve users. Only superusers can access this endpoint.
